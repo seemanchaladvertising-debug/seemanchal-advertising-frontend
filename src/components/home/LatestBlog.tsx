@@ -15,10 +15,16 @@ const LatestBlog = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [blogEnabled, setBlogEnabled] = useState(false);
 
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
+
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/site-content/homepage`);
+        const res = await fetch(`${apiBase}/site-content/homepage`);
         if (res.ok) {
           const data = await res.json();
           setBlogEnabled(data.sections.latestBlog.enabled);
@@ -30,7 +36,7 @@ const LatestBlog = () => {
 
     const fetchPosts = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs?limit=3`);
+        const res = await fetch(`${apiBase}/blogs?limit=3`);
         if (res.ok) {
           const data = await res.json();
           setPosts(data);
@@ -42,7 +48,7 @@ const LatestBlog = () => {
 
     fetchSettings();
     fetchPosts();
-  }, []);
+  }, [apiBase]);
 
   if (!blogEnabled || posts.length === 0) return null;
 

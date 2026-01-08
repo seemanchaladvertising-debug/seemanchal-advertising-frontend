@@ -17,23 +17,54 @@ interface FooterContent {
   socialLinks: { platform: string; url: string }[];
 }
 
+const fallbackFooter: FooterContent = {
+  about: {
+    text: 'The #1 platform for billboard and outdoor advertising in Seemanchal, connecting businesses with their target audiences through high-impact, strategically placed hoardings.',
+  },
+  quickLinks: [
+    { label: 'Home', url: '/' },
+    { label: 'About Us', url: '/about' },
+    { label: 'Contact Us', url: '/contact' },
+    { label: 'Blog', url: '/blog' },
+  ],
+  contact: {
+    address: '123 Advertising Lane, Seemanchal, Bihar',
+    email: 'info@seemanchalads.com',
+    phone: '+91 12345 67890',
+  },
+  socialLinks: [
+    { platform: 'Facebook', url: 'https://facebook.com' },
+    { platform: 'Twitter', url: 'https://twitter.com' },
+    { platform: 'Instagram', url: 'https://instagram.com' },
+  ],
+};
+
 const Footer = () => {
   const [content, setContent] = useState<FooterContent | null>(null);
+
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
 
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/site-content/footer`);
-        if (res.ok) {
-          const data = await res.json();
-          setContent(data);
+        const res = await fetch(`${apiBase}/site-content/footer`, { cache: 'no-store' });
+        if (!res.ok) {
+          setContent(fallbackFooter);
+          return;
         }
+        const data = await res.json();
+        setContent(data);
       } catch (error) {
         console.error('Failed to fetch footer content', error);
+        setContent(fallbackFooter);
       }
     };
     fetchContent();
-  }, []);
+  }, [apiBase]);
 
   if (!content) {
     return (

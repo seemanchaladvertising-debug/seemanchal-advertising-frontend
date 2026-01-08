@@ -17,10 +17,16 @@ const BuildingsPage = () => {
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
+
   useEffect(() => {
     const fetchBuildings = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buildings`);
+        const res = await fetch(`${apiBase}/buildings`);
         const data = await res.json();
         setBuildings(data);
       } catch (error) {
@@ -30,7 +36,7 @@ const BuildingsPage = () => {
       }
     };
     fetchBuildings();
-  }, []);
+  }, [apiBase]);
 
   return (
     <div className="container mx-auto px-4 py-8">

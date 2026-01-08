@@ -1,6 +1,10 @@
 async function getAboutContent() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/site-content/pages`, { next: { revalidate: 60 } });
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    const apiBase = trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+
+    const res = await fetch(`${apiBase}/site-content/pages`, { next: { revalidate: 60 } });
     if (!res.ok) return '';
     const data = await res.json();
     return data.aboutContent || '';

@@ -83,16 +83,7 @@ const Hero = () => {
       ) : backgroundUrl ? (
         <img src={backgroundUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
       ) : (
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          className="absolute inset-0 w-full h-full object-cover"
-        >
-          <source src="/hero-video.mp4" type="video/mp4" />
-          Your browser does not support the video tag.
-        </video>
+        <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800" />
       )}
       <div className="relative z-20 text-center px-4">
         <h1 className="text-4xl md:text-6xl font-extrabold mb-4 leading-tight">

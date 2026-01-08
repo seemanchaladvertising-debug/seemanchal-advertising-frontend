@@ -12,7 +12,11 @@ interface Blog {
 
 async function getBlog(slug: string): Promise<Blog | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${slug}`, { next: { revalidate: 3600 } });
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    const apiBase = trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+
+    const res = await fetch(`${apiBase}/blogs/${slug}`, { next: { revalidate: 300 } });
     if (!res.ok) return null;
     return res.json();
   } catch (error) {

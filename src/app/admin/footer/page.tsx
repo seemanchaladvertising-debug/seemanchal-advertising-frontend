@@ -25,11 +25,17 @@ const FooterCMSPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
+
   useEffect(() => {
     const fetchContent = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/site-content/footer`, {
+        const res = await fetch(`${apiBase}/site-content/footer`, {
           headers: { 'x-auth-token': token || '' },
         });
         if (res.ok) {
@@ -43,7 +49,7 @@ const FooterCMSPage = () => {
       }
     };
     fetchContent();
-  }, []);
+  }, [apiBase]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, section: keyof FooterContent, field: string, index?: number) => {
     if (!content) return;
@@ -63,7 +69,7 @@ const FooterCMSPage = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/site-content/footer`, {
+      await fetch(`${apiBase}/site-content/footer`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

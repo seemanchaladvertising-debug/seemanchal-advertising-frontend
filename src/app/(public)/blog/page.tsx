@@ -15,10 +15,16 @@ const BlogPage = () => {
   const [blogs, setBlogs] = useState<Blog[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
+
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs`);
+        const res = await fetch(`${apiBase}/blogs`);
         const data = await res.json();
         setBlogs(data);
       } catch (error) {
@@ -28,7 +34,7 @@ const BlogPage = () => {
       }
     };
     fetchBlogs();
-  }, []);
+  }, [apiBase]);
 
   return (
     <div className="container mx-auto px-4 py-8">

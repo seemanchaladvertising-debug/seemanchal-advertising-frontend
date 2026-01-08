@@ -7,16 +7,24 @@ import { auth } from '@/lib/firebase';
 
 const AdminLoginPage = () => {
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
 
   const handleGoogleSignIn = async () => {
     setError('');
+    setLoading(true);
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
       const idToken = await result.user.getIdToken();
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/admin/google-login`, {
+      const res = await fetch(`${apiBase}/admin/google-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ idToken }),

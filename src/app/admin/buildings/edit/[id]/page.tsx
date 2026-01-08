@@ -29,19 +29,25 @@ interface Building {
 
 const EditBuildingPage = () => {
   const params = useParams();
-  const { id } = params;
+  const id = params.id as string;
   const [building, setBuilding] = useState<Building | null>(null);
+
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
 
   useEffect(() => {
     if (id) {
       const fetchBuilding = async () => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buildings/${id}`);
+        const res = await fetch(`${apiBase}/buildings/${id}`);
         const data = await res.json();
         setBuilding(data);
       };
       fetchBuilding();
     }
-  }, [id]);
+  }, [apiBase, id]);
 
   return (
     <div>

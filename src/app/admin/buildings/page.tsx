@@ -18,10 +18,16 @@ const BuildingsPage = () => {
   const [buildings, setBuildings] = useState<Building[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
+
   useEffect(() => {
     const fetchBuildings = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buildings`);
+        const res = await fetch(`${apiBase}/buildings`);
         const data = await res.json();
         setBuildings(data);
       } catch (error) {
@@ -31,17 +37,17 @@ const BuildingsPage = () => {
       }
     };
     fetchBuildings();
-  }, []);
+  }, [apiBase]);
 
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this building?')) {
       try {
         const token = localStorage.getItem('token');
-        await fetch(`${process.env.NEXT_PUBLIC_API_URL}/buildings/${id}`, {
+        await fetch(`${apiBase}/buildings/${id}`, {
           method: 'DELETE',
           headers: { 'x-auth-token': token || '' },
         });
-        setBuildings(buildings.filter((b) => b.id !== id));
+        setBuildings(buildings.filter((building) => building.id !== id));
       } catch (error) {
         console.error('Failed to delete building', error);
       }

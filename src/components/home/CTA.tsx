@@ -18,10 +18,16 @@ const CTA = () => {
   const [content, setContent] = useState<CtaContent | null>(null);
   const [settings, setSettings] = useState<SectionSettings | null>(null);
 
+  const apiBase = (() => {
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+  })();
+
   useEffect(() => {
     const fetchContent = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/site-content/homepage`);
+        const res = await fetch(`${apiBase}/site-content/homepage`);
         if (res.ok) {
           const data = await res.json();
           setContent(data.cta);
@@ -32,7 +38,7 @@ const CTA = () => {
       }
     };
     fetchContent();
-  }, []);
+  }, [apiBase]);
 
   if (!settings?.enabled || !content) return null;
 

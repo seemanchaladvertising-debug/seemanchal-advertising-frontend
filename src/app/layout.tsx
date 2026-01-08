@@ -6,7 +6,11 @@ const inter = Inter({ subsets: ["latin"] });
 
 async function getSeoSettings() {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/site-content/settings`, { next: { revalidate: 3600 } });
+    const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+    const trimmed = raw.replace(/\/+$/, '');
+    const apiBase = trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+
+    const res = await fetch(`${apiBase}/site-content/settings`, { next: { revalidate: 3600 } });
     if (!res.ok) return null;
     return res.json();
   } catch (error) {
